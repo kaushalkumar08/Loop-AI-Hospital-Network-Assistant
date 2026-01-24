@@ -11,7 +11,7 @@ const loadData = () => {
         fs.createReadStream('hospitals.csv')
             .pipe(csv())
             .on('data', (data) => {
-                // Keep this TRICK: It cleans invisible characters from headers
+                
                 const cleanData = {};
                 Object.keys(data).forEach(key => {
                     const cleanKey = key.trim().replace(/^\ufeff/, ''); 
@@ -22,7 +22,7 @@ const loadData = () => {
             .on('end', () => {
                 hospitals = results;
                 
-                // Configure Search for YOUR specific headers
+                
                 const options = {
                     keys: ['HOSPITAL NAME', 'CITY', 'Address'], 
                     threshold: 0.3
@@ -35,7 +35,7 @@ const loadData = () => {
 };
 
 const searchHospitals = (query, location) => {
-    // 1. Filter by Location
+
     let searchSpace = hospitals;
     if (location) {
         const locLower = location.toLowerCase();
@@ -49,10 +49,10 @@ const searchHospitals = (query, location) => {
     // 2. Search Logic
     let results = [];
     if (!query) {
-        // If no hospital name mentioned, show top 3 near location
+       
         results = searchSpace.slice(0, 3).map(item => ({ item }));
     } else {
-        // Search specific hospital name
+        
         const localFuse = new Fuse(searchSpace, {
             keys: ['HOSPITAL NAME'], 
             threshold: 0.3
@@ -63,7 +63,7 @@ const searchHospitals = (query, location) => {
     // 3. Output Formatting
     return results.map(r => {
         const h = r.item;
-        // EXACT HEADERS - No more "Unknown"
+        
         const name = h['HOSPITAL NAME'] || "Unknown Hospital";
         const city = h['CITY'] || "Unknown City";
         const address = h['Address'] || "";

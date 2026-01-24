@@ -49,39 +49,34 @@ const tools = {
     }],
 };
 
-// --- HELPER: Gemini LLM Logic ---
 async function runGeminiChat(userText, history = []) {
-    // Initialize Model
+    
     const model = genAI.getGenerativeModel({ 
-        // CHANGE THIS LINE TO:
         model: "gemini-2.5-flash",
         systemInstruction: SYSTEM_INSTRUCTION,
         tools: [tools]
     });
 
-    // Start Chat Session
     const chat = model.startChat({
         history: history, 
     });
 
-    // 1. Send User Message
     const result = await chat.sendMessage(userText);
     const response = result.response;
     const functionCalls = response.functionCalls();
 
     let finalText = "";
 
-    // 2. Handle Tool Call (Function Calling)
     if (functionCalls && functionCalls.length > 0) {
-        const call = functionCalls[0]; // Gemini 1.5 Flash usually does one call at a time
+        const call = functionCalls[0]; 
         if (call.name === "get_hospitals") {
             const args = call.args;
             console.log("Gemini asking for tool:", args);
 
-            // Execute local function
+            
             const hospitalData = searchHospitals(args.name, args.location);
 
-            // 3. Send Tool Result back to Gemini
+            
             const toolResult = [{
                 functionResponse: {
                     name: "get_hospitals",
@@ -93,14 +88,13 @@ async function runGeminiChat(userText, history = []) {
             finalText = result2.response.text();
         }
     } else {
-        // No tool needed, just text response
         finalText = response.text();
     }
 
     return finalText;
 }
 
-// --- HELPER: Deepgram TTS (Text to Speech) ---
+// Function: Deepgram TTS (Text to Speech)
 async function textToSpeech(text) {
     try {
         const response = await deepgram.speak.request(
@@ -122,7 +116,7 @@ async function textToSpeech(text) {
     }
 }
 
-// Helper to convert web stream to node buffer
+// Function to convert web stream to node buffer
 async function streamToBuffer(stream) {
     if (Buffer.isBuffer(stream)) return stream;
     if (typeof stream.pipe === 'function') {
@@ -147,10 +141,6 @@ async function streamToBuffer(stream) {
 }
 
 
-// --- ROUTE 1: WEB INTERFACE ---
-// --- ROUTE 1: WEB INTERFACE ---
-// --- ROUTE: WEB INTERFACE ---
-// --- ROUTE: WEB INTERFACE ---
 app.post('/api/chat', upload.single('audio'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).send("No audio file.");
@@ -183,15 +173,12 @@ app.post('/api/chat', upload.single('audio'), async (req, res) => {
             } catch (e) { console.error(e); }
         }
 
-        // --- BUG FIX: CHECK HISTORY BEFORE CALLING AI ---
-        // We capture this NOW, because 'runGeminiChat' might modify the history object
+        
         const isFirstTurn = (history.length === 0);
-        // ------------------------------------------------
 
         // 3. Run Gemini
         let aiReply = await runGeminiChat(userText, history);
         
-        // --- APPLY GREETING USING THE CAPTURED VARIABLE ---
         if (isFirstTurn) {
             console.log("--> First Turn Detected! Forcing Greeting...");
             if (!aiReply.toLowerCase().includes("loop ai")) {
@@ -201,7 +188,6 @@ app.post('/api/chat', upload.single('audio'), async (req, res) => {
         
         console.log("AI Reply (Final):", aiReply);
 
-        // 4. Cleanup Text & Generate Audio
         const speechText = aiReply
             .replace(/\*\*/g, "")   // Remove bold
             .replace(/\*/g, "")     // Remove italics
@@ -227,7 +213,7 @@ app.post('/api/chat', upload.single('audio'), async (req, res) => {
     }
 });
 
-// --- ROUTE 2: TWILIO VOICE ---
+// TWILIO VOICE
 app.post('/api/twilio-voice', async (req, res) => {
     const twiml = new VoiceResponse();
     const userSpeech = req.body.SpeechResult;
@@ -239,7 +225,6 @@ app.post('/api/twilio-voice', async (req, res) => {
         } else {
             console.log("User (Phone):", userSpeech);
             
-            // Note: History is not maintained in this simple Twilio endpoint
             const aiReply = await runGeminiChat(userSpeech, []);
             
             twiml.say(aiReply);

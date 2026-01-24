@@ -5,7 +5,6 @@ import axios from 'axios';
 function App() {
   const [loading, setLoading] = useState(false);
   
-  // WE USE BOTH STATE (for React) AND REF (for the Recorder to see latest data)
   const [history, setHistory] = useState([]); 
   const historyRef = useRef([]); 
 
@@ -24,7 +23,6 @@ function App() {
     const formData = new FormData();
     formData.append('audio', audioBlob, 'input.wav');
     
-    // FIX: Use 'historyRef.current' to get the REAL latest history
     formData.append('history', JSON.stringify(historyRef.current));
 
     try {
@@ -36,14 +34,13 @@ function App() {
       const userText = response.headers['x-user-transcript'];
 
       if (userText && aiText) {
-        // Update both State and Ref
         const newEntry = [
           { role: 'user', content: userText },
           { role: 'assistant', content: aiText }
         ];
 
         setHistory(prev => [...prev, ...newEntry]);
-        historyRef.current = [...historyRef.current, ...newEntry]; // Keep Ref in sync
+        historyRef.current = [...historyRef.current, ...newEntry]; 
       }
 
       const audioUrl = URL.createObjectURL(response.data);
