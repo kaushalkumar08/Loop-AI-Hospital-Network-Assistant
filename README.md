@@ -1,4 +1,5 @@
 Loop AI - Voice-to-Voice Hospital Assistant
+
 A real-time voice AI agent built for the LoopHealth Internship Assignment. This application allows users to find hospitals, check network availability, and ask general questions using natural language voice interaction.
 
 🚀 Features
