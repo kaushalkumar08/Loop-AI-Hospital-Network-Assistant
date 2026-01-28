@@ -12,7 +12,7 @@ const app = express();
 const upload = multer({ dest: 'uploads/' });
 
 app.use(cors({
-    // origin: '*', 
+    // origin: 'https://loop-ai-hospital-network-assistant.onrender.com/', 
     exposedHeaders: ['X-Transcript', 'X-User-Transcript']
 }));
 app.use(express.json());
