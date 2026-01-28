@@ -27,3 +27,5 @@ Loop AI - Voice-to-Voice Hospital Assistant
 5. Text-to-Speech (TTS): Deepgram Aura 
 
 6. Search Engine: Fuse.js 
+
+##
