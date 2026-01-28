@@ -28,4 +28,5 @@ Loop AI - Voice-to-Voice Hospital Assistant
 
 6. Search Engine: Fuse.js 
 
+Deployed Link - https://loop-ai-hospital-network-assistant.onrender.com/
 ##
