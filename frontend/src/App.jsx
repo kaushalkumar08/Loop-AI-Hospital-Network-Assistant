@@ -26,7 +26,7 @@ function App() {
     formData.append('history', JSON.stringify(historyRef.current));
 
     try {
-      const response = await axios.post('https://loop-ai-backend-xyz.onrender.com/api/chat', formData, {
+      const response = await axios.post('https://loop-ai-hospital-network-assistant-t5d3.onrender.com/api/chat', formData, {
         responseType: 'blob' 
       });
 
